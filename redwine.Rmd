@@ -24,8 +24,6 @@ setwd("/Users/dev/Documents/Udacity/Explore and Summarize Project")
 winedata <- read.csv("wineQualityReds.csv")
 ```
 
-# Univariate Plots Section
-
 Lets start by looking at the data summary
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots}
 str(winedata)
@@ -35,36 +33,30 @@ summary(winedata)
 
 From this summary we can see some broad categories like: acidity, sugar, chemical groups, quality, alcohol content.
 
+# Univariate Plots Section
+
 Lets start by plotting the quality
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=as.factor(quality)), data = winedata) +
   labs(x='quality') +
   geom_bar()
 ```
+
 This looks like a normal distribution.
 
-To continue this analysis further, lets look at the: density, alcohol levels and sugar
+To continue this analysis further, lets look at the: density, alcohol levels and sugar.
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=density), data = winedata) +
   geom_histogram()
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=alcohol), data = winedata) +
-  geom_histogram()
-```
-```{r echo=FALSE, message=FALSE, warning=FALSE}
 summary(winedata$alcohol)
 
 ggplot(aes(x=alcohol), data = winedata) +
   geom_histogram(binwidth = 0.1)
-```
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-summary(winedata$alcohol)
-
-ggplot(aes(x=alcohol), data = winedata) +
-  scale_x_log10() +
-  geom_histogram()
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -84,7 +76,8 @@ ggplot(aes(x=residual.sugar), data = winedata) +
 
 Nothing significant can be seen here.
 
-Now, lets look at the acidity
+Now, lets look at the acidity.
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=pH), data = winedata) +
   geom_histogram(binwidth = 0.1)
@@ -112,9 +105,11 @@ ggplot(aes(x=citric.acid), data = winedata) +
   scale_x_log10() +
   geom_histogram(fill=I('#FF0D09'))
 ```
+
 It seems skewed when measured on a log scale.
 
-Finally, lets explore the chemical levels
+Finally, lets explore the chemical levels.
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 chloride_plot <- ggplot(aes(x=chlorides), data = winedata) +
   geom_histogram(fill=I('#F79420'), binwidth = 0.001)
@@ -136,6 +131,7 @@ tsd_plot <- ggplot(aes(x=total.sulfur.dioxide), data = winedata) +
 
 grid.arrange(fsd_plot, tsd_plot)
 ```
+
 Both distributions are skewed.
 # Univariate Analysis
 
@@ -179,10 +175,7 @@ pairs.panels(analysis_winedata)
 From the above table and plot matrix we see "fixed.acidity", "volatile.acidity" and "pH" has some correlation with "citric.acid". Interestingly, density has some correlation with "fixed.acidity" and "alcohol". Also, "quality" has some correlation with "alcohol".
 
 Lets now look at pH, fixed.acidity and volatile.acidity versus citric.acid.
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=citric.acid, y=pH), data = winedata) +
-  geom_point()
-```
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=citric.acid, y=pH), data = winedata) +
   xlim(0, quantile(analysis_winedata$citric.acid, 0.99)) +
@@ -192,10 +185,7 @@ lm(formula = citric.acid ~ pH, data=analysis_winedata)
 ```
 
 From the scatter plot we can see that the data seems to be slightly negatively correlated.
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=citric.acid, y=fixed.acidity), data = winedata) +
-  geom_point()
-```
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=citric.acid, y=fixed.acidity), data = winedata) +
   xlim(0, quantile(analysis_winedata$citric.acid, 0.99)) +
@@ -205,10 +195,7 @@ lm(formula = citric.acid ~ fixed.acidity, data=analysis_winedata)
 ```
 
 From the scatter plot we can see that the data seems to be slightly positively correlated.
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=citric.acid, y=volatile.acidity), data = winedata) +
-  geom_point()
-```
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=citric.acid, y=volatile.acidity), data = winedata) +
   xlim(0, quantile(analysis_winedata$citric.acid, 0.99)) +
@@ -229,10 +216,7 @@ lm(formula = pH ~ volatile.acidity, data=analysis_winedata)
 There definitly seems to be some sort of correlation here.
 
 Now, lets look at denisty vs alcohol and density vs fixed.acidity. 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=density, y=alcohol), data = winedata) +
-  geom_point()
-```
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=density, y=alcohol), data = winedata) +
   geom_point(alpha=0.5, position = 'jitter')
@@ -243,8 +227,9 @@ The general trend here seems to be that alcohol levels decrease with density. Wh
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=density, y=fixed.acidity), data = winedata) +
-  geom_point()
+  geom_point(alpha=0.5, position = 'jitter')
 ```
+
 There is a clearcut linear relationship between fixed acidity and density. The acidity goes up with the density.
 
 Now, lets more to the most interesting plot between alcohol and quality.
@@ -278,42 +263,46 @@ pH and fixed acidity seem to have the strongest correlation.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Multivariate_Plots}
 ggplot(aes(x = density, y = alcohol, color = factor(quality)), data = analysis_winedata) + 
-  geom_point() +
+  geom_point(alpha = 0.5, position = 'jitter') +
   theme_dark() +
   scale_color_brewer(type = 'div',
                      guide = guide_legend(title = 'Quality',
                                           override.aes = list(alpha = 1, size = 2)))
 ```
+
 In the above plot of Alcohol vs Density vs Quality. We can see that alcohols rated 5 in quality are on the more denser while having low alcohol content.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x = residual.sugar, y = alcohol, color = factor(quality)), data = subset(analysis_winedata, analysis_winedata$residual.sugar < 4)) + 
-  geom_point() +
+  geom_point(alpha = 0.5) +
   theme_dark() +
   scale_color_brewer(type = 'div',
                      guide = guide_legend(title = 'Quality',
                                           override.aes = list(alpha = 1, size = 2)))
 ```
+
 No significant observations can be derived from this plot.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x = alcohol, y = pH, color = factor(quality)), data = analysis_winedata) + 
-  geom_point() +
+  geom_point(alpha = 0.5) +
   theme_dark() +
   scale_color_brewer(type = 'div',
                      guide = guide_legend(title = 'Quality',
                                           override.aes = list(alpha = 1, size = 2)))
 ```
+
 There are no interesting patterns here.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x = pH, y = citric.acid, color = factor(quality)), data = analysis_winedata) + 
-  geom_point() +
+  geom_point(alpha = 0.5, position = 'jitter') +
   theme_dark() +
   scale_color_brewer(type = 'div',
                      guide = guide_legend(title = 'Quality',
                                           override.aes = list(alpha = 1, size = 2)))
 ```
+
 Clearly acidity varies negatively with the pH. But, the quality seems to be uniform.
 
 
@@ -334,34 +323,45 @@ No.
 ### Plot One
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Three}
 fixed_acidity_plot <- ggplot(aes(x=fixed.acidity), data = winedata) +
+  labs(x='Fixed Acidity', y='Count', title='Fixed Acidity levels in the sample') +
   geom_histogram(fill=I('#099DD9'), binwidth = 0.1)
 
 volatile_acidity_plot <- ggplot(aes(x=volatile.acidity), data = winedata) +
+  labs(x='Volatile Acidity', y='Count', title='Volatile Acidity levels in the sample') +
   geom_histogram(fill=I('#F79420'), binwidth = 0.01)
 
 citric_acid_plot <- ggplot(aes(x=citric.acid), data = winedata) +
+  labs(x='Citric Acid', y='Count', title='Citric Acid levels in the sample') +
   geom_histogram(fill=I('#FF0D09'), binwidth = 0.01)
 
 grid.arrange(fixed_acidity_plot, volatile_acidity_plot, citric_acid_plot)
 ```
 
 ### Description One
+The above three graphs show how different acidity levels are distributed thoughout the dataset.
+
+Both, fixed and volatile acidity level have a normal distribution, which is as expected.
+
 Their seems to be spikes in the citric acid instead of the expected normal distributions.
 
 ### Plot Two
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_One}
 ggplot(aes(x=factor(quality), y=alcohol), data = winedata) +
+  labs(x='Quality', y='Alcohol', title='Relationship of Alcohol and Quanlity') +
   geom_boxplot() +
   stat_summary(fun.y = mean, geom = 'point', shape=4)
 ```
 
 ### Description Two
-This boxplot shows how quality varies with alcohol level with a dip at '5'.
+This is boxplot of quality of wine versus alcohol content distributed as per their quality levels. The general expectation was to see a linear relationship between the two variables. That seems to be the general trend.
+
+But, there seems to be a dip at quality '5'.
 
 ### Plot Three
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Two}
 ggplot(aes(x = residual.sugar, y = alcohol, color = factor(quality)), data = subset(analysis_winedata, analysis_winedata$residual.sugar < 4)) + 
-  geom_point() +
+  labs(x='Residual Sugar', y='Alcohol', title='Relationship of Alcohol and Sugar with Quality') +
+  geom_point(alpha = 0.5) +
   theme_dark() +
   scale_color_brewer(type = 'div',
                      guide = guide_legend(title = 'Quality',
@@ -369,10 +369,16 @@ ggplot(aes(x = residual.sugar, y = alcohol, color = factor(quality)), data = sub
 ```
 
 ### Description Three
-This plot shows how residual sugar varies with alcohol. Even though the alcohol levels vary widely with sugar, there is a clear preference for wines with lower amount of residual sugar.
-------
+This is a Multivariate plot showing the relationship between Alcohol, Sugar and Quality.
+
+We can see, even though the alcohol levels vary widely with sugar, there is no clear preference for wines with lower amount of residual sugar. The sugar levels are all over the graph.
+
 
 # Reflection
+This analysis was conducted conducted with the view of trying to uncover hidden insights by move a step at a time and proceeding further or retracting backwards based on the outcome. It was at times unbelievable at times when the hypothesis was incorrect, but it did make sense. The most important thing that influenced the direction on the analysis was some sort of patterns that unravelled.
+
+In the future analysis, it would make sense to carry out analysis based on the chemical compositions.
+
 The take aways from this analysis are that wines with high quality tend to have higher alcohol content and low residual sugar. Another interesting finding was that citric acidity decreases with pH levels. So, wines with lower acidty have higher citric acid content.
 
 In conclusion, if you are looking for a good bottle of wine. It will most like have very little sweetness to it, but will be strong.
