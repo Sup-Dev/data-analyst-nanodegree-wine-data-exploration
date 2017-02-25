@@ -87,13 +87,13 @@ pH seems to follow a normal distribution, with the largest concentration around 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 fixed_acidity_plot <- ggplot(aes(x=fixed.acidity), data = winedata) +
-  geom_histogram(fill=I('#099DD9'), binwidth = 0.1)
+  geom_histogram(binwidth = 0.1)
 
 volatile_acidity_plot <- ggplot(aes(x=volatile.acidity), data = winedata) +
-  geom_histogram(fill=I('#F79420'), binwidth = 0.01)
+  geom_histogram(binwidth = 0.01)
 
 citric_acid_plot <- ggplot(aes(x=citric.acid), data = winedata) +
-  geom_histogram(fill=I('#FF0D09'), binwidth = 0.01)
+  geom_histogram(binwidth = 0.01)
 
 grid.arrange(fixed_acidity_plot, volatile_acidity_plot, citric_acid_plot)
 ```
@@ -103,7 +103,7 @@ Looks like the fixed and volatile acidity seems to skewed. But, no pattern is vi
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=citric.acid), data = winedata) +
   scale_x_log10() +
-  geom_histogram(fill=I('#FF0D09'))
+  geom_histogram()
 ```
 
 It seems skewed when measured on a log scale.
@@ -112,10 +112,10 @@ Finally, lets explore the chemical levels.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 chloride_plot <- ggplot(aes(x=chlorides), data = winedata) +
-  geom_histogram(fill=I('#F79420'), binwidth = 0.001)
+  geom_histogram(binwidth = 0.01)
 
 sulphate_plot <- ggplot(aes(x=sulphates), data = winedata) +
-  geom_histogram(fill=I('#FF0D09'), binwidth = 0.01)
+  geom_histogram(binwidth = 0.03)
 
 grid.arrange(chloride_plot, sulphate_plot)
 ```
@@ -124,10 +124,10 @@ These plots look like normal distributions if we remove the outliers.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 fsd_plot <- ggplot(aes(x=free.sulfur.dioxide), data = winedata) +
-  geom_histogram(fill=I('#F79420'), binwidth = 1)
+  geom_histogram(binwidth = 1)
 
 tsd_plot <- ggplot(aes(x=total.sulfur.dioxide), data = winedata) +
-  geom_histogram(fill=I('#FF0D09'), binwidth = 1)
+  geom_histogram(binwidth = 5)
 
 grid.arrange(fsd_plot, tsd_plot)
 ```
@@ -159,6 +159,9 @@ No aditional changes were made.
 
 
 # Bivariate Plots Section
+
+From this point onwards I will be considering only non free radical features for analysis. So, it makes sense to subset the data and remove the fields: chlorides, sulphates and sulfur dioxides. The reason for this decision is to look for a general analysis, intead of a very free radical centric analysis.
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Bivariate_Plots}
 analysis_winedata <- winedata[, c("fixed.acidity", "volatile.acidity", "citric.acid", "residual.sugar", "density", "pH", "alcohol", "quality")]
 cor(analysis_winedata)
@@ -323,16 +326,16 @@ No.
 ### Plot One
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Three}
 fixed_acidity_plot <- ggplot(aes(x=fixed.acidity), data = winedata) +
-  labs(x='Fixed Acidity', y='Count', title='Fixed Acidity levels in the sample') +
-  geom_histogram(fill=I('#099DD9'), binwidth = 0.1)
+  labs(x='Fixed Acidity (tartaric acid - g / dm^3)', y='Count', title='Fixed Acidity levels in the sample') +
+  geom_histogram(binwidth = 0.1)
 
 volatile_acidity_plot <- ggplot(aes(x=volatile.acidity), data = winedata) +
-  labs(x='Volatile Acidity', y='Count', title='Volatile Acidity levels in the sample') +
-  geom_histogram(fill=I('#F79420'), binwidth = 0.01)
+  labs(x='Volatile Acidity (acetic acid - g / dm^3)', y='Count', title='Volatile Acidity levels in the sample') +
+  geom_histogram(binwidth = 0.01)
 
 citric_acid_plot <- ggplot(aes(x=citric.acid), data = winedata) +
-  labs(x='Citric Acid', y='Count', title='Citric Acid levels in the sample') +
-  geom_histogram(fill=I('#FF0D09'), binwidth = 0.01)
+  labs(x='Citric Acid (g / dm^3)', y='Count', title='Citric Acid levels in the sample') +
+  geom_histogram(binwidth = 0.01)
 
 grid.arrange(fixed_acidity_plot, volatile_acidity_plot, citric_acid_plot)
 ```
@@ -347,7 +350,7 @@ Their seems to be spikes in the citric acid instead of the expected normal distr
 ### Plot Two
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_One}
 ggplot(aes(x=factor(quality), y=alcohol), data = winedata) +
-  labs(x='Quality', y='Alcohol', title='Relationship of Alcohol and Quanlity') +
+  labs(x='Quality', y='Alcohol (% by volume)', title='Relationship of Alcohol and Quanlity') +
   geom_boxplot() +
   stat_summary(fun.y = mean, geom = 'point', shape=4)
 ```
@@ -360,7 +363,7 @@ But, there seems to be a dip at quality '5'.
 ### Plot Three
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Two}
 ggplot(aes(x = residual.sugar, y = alcohol, color = factor(quality)), data = subset(analysis_winedata, analysis_winedata$residual.sugar < 4)) + 
-  labs(x='Residual Sugar', y='Alcohol', title='Relationship of Alcohol and Sugar with Quality') +
+  labs(x='Residual Sugar (g / dm^3)', y='Alcohol (% by volume)', title='Relationship of Alcohol and Sugar with Quality') +
   geom_point(alpha = 0.5) +
   theme_dark() +
   scale_color_brewer(type = 'div',
@@ -377,7 +380,9 @@ We can see, even though the alcohol levels vary widely with sugar, there is no c
 # Reflection
 This analysis was conducted conducted with the view of trying to uncover hidden insights by move a step at a time and proceeding further or retracting backwards based on the outcome. It was at times unbelievable at times when the hypothesis was incorrect, but it did make sense. The most important thing that influenced the direction on the analysis was some sort of patterns that unravelled.
 
-In the future analysis, it would make sense to carry out analysis based on the chemical compositions.
+The biggest struggle in this process was working though the number of iterations needed to get the results out correctly, which in itself is a very tedious process. I felt like giving up at times, but instead I decided to work through it one step at a time.
+
+In the future analysis, it would make sense to carry out analysis based on the free radicals.
 
 The take aways from this analysis are that wines with high quality tend to have higher alcohol content and low residual sugar. Another interesting finding was that citric acidity decreases with pH levels. So, wines with lower acidty have higher citric acid content.
 
